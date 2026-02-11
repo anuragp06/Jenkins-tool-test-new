@@ -1,0 +1,16 @@
+name: npmBuild
+description: Build application using npm
+inputs:
+  build_command:
+    description: Command to build the application
+    required: false
+    default: npm run build
+runs:
+  using: composite
+  steps:
+    - name: Show build intent
+      run: echo "Build application"
+      shell: bash
+    - name: Show expected command
+      run: echo "Expected command is ${{ inputs.build_command }}"
+      shell: bash

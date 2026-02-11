@@ -1,0 +1,18 @@
+name: setupNode
+description: Setup Node.js runtime
+inputs:
+  version:
+    description: Node.js version
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Show intent
+      run: echo "Setup Nodejs runtime"
+      shell: bash
+    - name: Show requested version
+      run: echo "Requested Nodejs version ${{ inputs.version }}"
+      shell: bash
+    - name: Show note
+      run: echo "Actual installation skipped Windows safe intent mode"
+      shell: bash

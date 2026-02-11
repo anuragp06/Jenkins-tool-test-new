@@ -1,0 +1,18 @@
+name: npmInstall
+description: Setup Node.js runtime intent
+inputs:
+  version:
+    description: Node.js version
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Show setup intent
+      run: echo "Setup Node.js runtime"
+      shell: bash
+    - name: Show requested version
+      run: echo "Requested Node.js version ${{ inputs.version }}"
+      shell: bash
+    - name: Show note
+      run: echo "Actual installation skipped Windows safe intent mode"
+      shell: bash

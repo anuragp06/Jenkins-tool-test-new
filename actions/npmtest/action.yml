@@ -1,0 +1,19 @@
+name: npmTest
+description: Execute npm test suite
+inputs:
+  skip_tests:
+    description: Skip tests if true
+    required: false
+    default: false
+runs:
+  using: composite
+  steps:
+    - name: Show intent
+      run: echo "Execute test suite"
+      shell: bash
+    - name: Show expected command
+      run: echo "Expected command npm test"
+      shell: bash
+    - name: Show skip message
+      run: echo "Tests may be skipped based on pipeline parameters"
+      shell: bash

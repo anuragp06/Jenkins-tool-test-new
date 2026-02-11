@@ -1,0 +1,19 @@
+name: deployApp
+description: Deploy application to specified environment
+inputs:
+  environment:
+    description: Deployment target environment
+    required: true
+    default: production
+runs:
+  using: composite
+  steps:
+    - name: Show deployment intent
+      run: echo "Deploy application"
+      shell: bash
+    - name: Show target environment
+      run: echo "Target environment ${{ inputs.environment }}"
+      shell: bash
+    - name: Show deployment strategy info
+      run: echo "Deployment strategy varies per environment"
+      shell: bash

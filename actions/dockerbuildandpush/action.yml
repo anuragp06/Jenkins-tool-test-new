@@ -1,0 +1,33 @@
+name: dockerBuildAndPush
+description: Build and push Docker image
+inputs:
+  appName:
+    description: Application name
+    required: false
+    default: ""
+  registry:
+    description: Docker registry
+    required: false
+    default: ""
+  tag:
+    description: Image tag
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Show intent
+      run: echo "Build and push Docker image"
+      shell: bash
+    - name: Show application name
+      run: echo "Application name ${{ inputs.appName }}"
+      shell: bash
+    - name: Show registry
+      run: echo "Docker registry ${{ inputs.registry }}"
+      shell: bash
+    - name: Show image tag
+      run: echo "Image tag ${{ inputs.tag }}"
+      shell: bash
+    - name: Show note
+      run: echo "Docker execution skipped Windows safe intent mode"
+      shell: bash

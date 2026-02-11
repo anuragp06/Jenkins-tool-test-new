@@ -1,0 +1,22 @@
+name: notifyStatus
+description: Notify pipeline status with a custom message
+inputs:
+  message:
+    description: Status message to display
+    required: true
+    default: Pipeline completed
+runs:
+  using: composite
+  steps:
+    - name: Show separator
+      run: echo "------------------------------------"
+      shell: bash
+    - name: Show status
+      run: echo "PIPELINE STATUS"
+      shell: bash
+    - name: Show message
+      run: echo "${{ inputs.message }}"
+      shell: bash
+    - name: Show separator again
+      run: echo "------------------------------------"
+      shell: bash
