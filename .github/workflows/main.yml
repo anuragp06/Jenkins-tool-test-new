@@ -1,0 +1,90 @@
+name: CI Pipeline
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ENV:
+        description: "Target environment"
+        required: false
+        default: "dev"
+        type: string
+      RUN_TESTS:
+        description: "Run tests"
+        required: false
+        default: "true"
+        type: boolean
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: "sample-app"
+      REGISTRY: "docker.io/example"
+      DOCKER_CREDS: "${{ secrets.DOCKER_HUB_CREDS }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+
+      - name: Check for package.json
+        id: check_node
+        run: |
+          if [ -f "package.json" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        if: steps.check_node.outputs.found == 'true'
+        run: npm install
+
+      - name: Build app
+        if: steps.check_node.outputs.found == 'true'
+        run: npm run build
+
+      - name: Test app
+        if: ${{ steps.check_node.outputs.found == 'true' && (github.event_name != 'workflow_dispatch' || github.event.inputs.RUN_TESTS == 'true') }}
+        run: npm test
+
+      - name: Check for Dockerfile
+        id: check_docker
+        run: |
+          if [ -f "Dockerfile" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Docker build
+        if: steps.check_docker.outputs.found == 'true'
+        run: |
+          docker build -t "${{ env.REGISTRY }}/${{ env.APP_NAME }}:${{ github.event.inputs.ENV || 'dev' }}" .
+
+      - name: Docker login
+        if: steps.check_docker.outputs.found == 'true'
+        run: |
+          echo "${{ env.DOCKER_CREDS }}" | docker login -u "${{ env.APP_NAME }}" --password-stdin "${{ env.REGISTRY }}"
+
+      - name: Docker push
+        if: steps.check_docker.outputs.found == 'true'
+        run: |
+          docker push "${{ env.REGISTRY }}/${{ env.APP_NAME }}:${{ github.event.inputs.ENV || 'dev' }}"
+
+      - name: Deploy app
+        run: echo "Deploying to ${{ github.event.inputs.ENV || 'dev' }}"
+
+      - name: Notify pipeline completed
+        if: always()
+        run: echo "Pipeline completed"
+
+      - name: Notify pipeline succeeded
+        if: success()
+        run: echo "Pipeline succeeded"
+
+      - name: Notify pipeline failed
+        if: failure()
+        run: echo "Pipeline failed"
